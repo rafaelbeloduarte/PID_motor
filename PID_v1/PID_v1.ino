@@ -35,7 +35,7 @@ void loop() {
   if (r < 0) {
     r = 0;
   }
- /* ler = Serial.read();
+  ler = Serial.read();
   if (ler == 's') {
     if (Serial.available() > 0) {
       kp = Serial.parseFloat();
@@ -51,7 +51,7 @@ void loop() {
 
       soma_erro = 0;
     }
-  }*/
+  }
 
   tempo_atual = millis();
 
