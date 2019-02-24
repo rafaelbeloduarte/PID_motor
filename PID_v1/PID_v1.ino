@@ -105,6 +105,13 @@ void loop() {
   e = set_point - LDR_valor;
 
   soma_erro += e * dt;
+
+  if (soma_erro > 500) {
+    soma_erro = 500;
+  }
+  if (soma_erro < -500) {
+    soma_erro = -500;
+  }
   
   //anti-windup - clamping
   // zerar o termo da integral se:
