@@ -104,13 +104,7 @@ def handle_leitura():
     def iniciar():  # Esta função lê o inpu
         # t da porta selecionada
         arquivousuario = open(salvararquivo, 'w')
-        arquivousuario.write('set point;           '.rstrip('\n'))
-        arquivousuario.write('soma erro;            '.rstrip('\n'))
-        arquivousuario.write('LDR;           '.rstrip('\n'))
-        arquivousuario.write('r;            '.rstrip('\n'))
-        arquivousuario.write('kp;            '.rstrip('\n'))
-        arquivousuario.write('ki;            '.rstrip('\n'))
-        arquivousuario.write('kd;            ' + '\n')
+        arquivousuario.write('set_point, soma_erro, LDR_valor, r, kp, ki, kd \n')
         arquivousuario.close()
 
         texto_lb_kp = StringVar()
@@ -141,6 +135,7 @@ def handle_leitura():
         kd.grid(row=14, column=7)
 
         k = 0
+        i_limpa_texto = 0
 
         arquivousuario = open(salvararquivo, 'a')
 
@@ -166,13 +161,20 @@ def handle_leitura():
                 serial_bytes = ser.readline()
                 serial_texto = serial_bytes.decode('utf-8')
                 a = serial_texto.split(':')
-                dados = '[%s]' % ', '.join(map(str, a)) + "\n"
-                dados = dados.replace('\n', ' ').replace('\r', '')
+                dados = []
+                if a:
+                    dados = '[%s]' % ', '.join(map(str, a)) + "\n"
+                    dados = dados.replace('\n', '').replace('\r', '').replace('[', '').replace(']', '')
                 # ordem: set_point, soma_erro, LDR_valor, r, kp, ki, kd
-                arquivousuario.write(dados + '\n')
-                arquivousuario.flush()
-                text.insert(INSERT, dados + '\n')
-                text.see(END)
+                if dados:
+                    arquivousuario.write(dados + '\n')
+                    arquivousuario.flush()
+                    text.insert(INSERT, dados + '\n')
+                    text.see(END)
+                    i_limpa_texto += 1
+                if i_limpa_texto > 1000:
+                    text.delete(1.0, END)
+                    i_limpa_texto = 0
                 # time.sleep(1)
         except Exception as e:
             messagebox.showinfo("Erro!", "Erro: " + str(e), icon = 'error')
@@ -322,8 +324,12 @@ espaco2 = Label(top, text=" ") # apenas coloca um espaço vazio no grid
 espaco2.grid(row=8, column=1)
 espaco2.configure(background = '#6689da', foreground = 'white')
 
+label_variaveis = Label(top, text="Set point      soma erro     LDR_valor        r          kp       ki       kd")
+label_variaveis.grid(row=9, column=1, columnspan = 4)
+label_variaveis.configure(background = '#6689da', foreground='white')
+
 text = ScrolledText(top, width=50, height=20)
-text.grid(row=9, column=1, columnspan=5, rowspan = 10)
+text.grid(row=11, column=1, columnspan=5, rowspan = 10)
 
 # chama o mainloop -> abre a janela com os itens anteriores
 top.mainloop()
