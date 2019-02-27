@@ -3,7 +3,7 @@
 #define pino_pot A5
 
 /*equação:  Resposta = P*erro + I*(soma(0,t)erro*delta t) + D*(erro_ant - erro_atual)/delta t */
-float r, ultimo_r_valido;
+float r;
 float LDR_valor, e, kp = .8, ki = .05, kd = 0,  soma_erro, derivada, set_point, dt, tempo_atual;
 long timer;
 char ler = 'n';
@@ -36,29 +36,30 @@ void loop() {
     r = 0;
   }
   ler = Serial.read();
-  if (ler == 's') {
+  if (ler == 'p') {
     if (Serial.available() > 0) {
       kp = Serial.parseFloat();
-      ki  = Serial.parseFloat();
-      kd  = Serial.parseFloat();
-
-      Serial.print("kp ");
-      Serial.println(kp);
-      Serial.print("ki ");
-      Serial.println(ki);
-      Serial.print("kd ");
-      Serial.println(kd);
-
       soma_erro = 0;
     }
   }
-
+  if (ler == 'i') {
+    if (Serial.available() > 0) {
+      ki = Serial.parseFloat();
+      soma_erro = 0;
+    }
+  }
+  if (ler == 'd') {
+    if (Serial.available() > 0) {
+      kd = Serial.parseFloat();
+      soma_erro = 0;
+    }
+  }
   tempo_atual = millis();
 
   LDR_valor = map(analogRead(pino_LDR), 0, 1023, 0, 255);
   analogWrite(pino_LED, r);
 
-  if (millis() > 300 + timer) {
+  if (millis() > 1000 + timer) {
 
     set_point = map(analogRead(pino_pot), 0, 1023, 0, 255);
     Serial.print(set_point);
@@ -95,7 +96,7 @@ void loop() {
   e = set_point - LDR_valor;
 
   soma_erro += e * dt;
-  
+
   if (soma_erro > 500) {
     soma_erro = 500;
   }
