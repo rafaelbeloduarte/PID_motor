@@ -33,49 +33,6 @@ def sel():
     label.config(text=selecao)
 
 # def graficoinst():
-#     graf_Temperatura = open('grafico.txt', 'r').read()
-#     linha1 = graf_Temperatura.split('\n')
-#     Temp = filter(None, linha1)
-#     Temp = list(Temp)
-#     temperatura1 = []
-#     temperatura2 = []
-#     for i in range(len(Temp)):
-#         if Temp[i].startswith('Sensor 2'):
-#             temporario = Temp[i].split(':')
-#             temperatura1.append(temporario[1])
-#         if Temp[i].startswith('Sensor 3'):
-#             temporario = Temp[i].split(':')
-#             temperatura2.append(temporario[1])
-#     graf_tempo = open('tempo.txt', 'r').read()
-#     t = graf_tempo.split('\n')
-#     tempo = filter(None, t)
-#     tempo = list(tempo)
-#     t1 = []
-#     t2 = []
-#     for i in range(len(tempo)):
-#         if tempo[i].startswith('t1'):
-#             temporario = tempo[i].split(':')
-#             t1.append(temporario[1])
-#         if tempo[i].startswith('t2'):
-#             temporario = tempo[i].split(':')
-#             t2.append(temporario[1])
-#     for i in range(len(t1)):
-#         t1[i] = float(t1[i])
-#     for i in range(len(t2)):
-#         t2[i] = float(t2[i])
-#     tempo1 = []
-#     tempo2 = []
-#     menor_tamanho_vetor = min(len(t1), len(t2), len(temperatura1), len(temperatura2))
-#     for i in range(menor_tamanho_vetor):
-#         tempo1.append(t1[i] - t1[0])
-#     for i in range(menor_tamanho_vetor):
-#         tempo2.append(t2[i] - t1[0])
-#     temp1 = []
-#     temp2 = []
-#     for i in range(menor_tamanho_vetor):
-#         temp1.append(float(temperatura1[i]))
-#     for i in range(menor_tamanho_vetor):
-#         temp2.append(float(temperatura2[i]))
 #     plt.close()
 #     fig1 = plt.figure()
 #     ex1 = plt.subplot(2, 1, 1)
@@ -118,7 +75,6 @@ def selbaud():
     labelbaud.config(text=selection)
 
 def handle_leitura():
-
     try:
         ser = serial.Serial(var.get(), baudrate=varbaud.get(), timeout=1, parity=serial.PARITY_NONE,
                             stopbits=serial.STOPBITS_ONE,
@@ -145,10 +101,9 @@ def handle_leitura():
     instr_arquivo.grid(row=2, column = 2, columnspan= 5)
     instr_arquivo.configure(background='blue', foreground='white', borderwidth = 3, relief = 'groove')
 
-
     def iniciar():  # Esta função lê o inpu
         # t da porta selecionada
-        arquivousuario = open(salvararquivo, 'a')
+        arquivousuario = open(salvararquivo, 'w')
         arquivousuario.write('set point;           '.rstrip('\n'))
         arquivousuario.write('soma erro;            '.rstrip('\n'))
         arquivousuario.write('LDR;           '.rstrip('\n'))
@@ -156,18 +111,69 @@ def handle_leitura():
         arquivousuario.write('kp;            '.rstrip('\n'))
         arquivousuario.write('ki;            '.rstrip('\n'))
         arquivousuario.write('kd;            ' + '\n')
+        arquivousuario.close()
+
+        texto_lb_kp = StringVar()
+        texto_lb_kp.set("Kp:")
+        label_kp = Label(top, textvariable=texto_lb_kp, relief=GROOVE, bd=2)
+        label_kp.grid(row=10, column=6)
+        label_kp.configure(background = '#6689da', foreground='white')
+
+        texto_lb_ki = StringVar()
+        texto_lb_ki.set("Ki:")
+        label_ki = Label(top, textvariable=texto_lb_ki, relief=GROOVE, bd=2)
+        label_ki.grid(row=12, column=6)
+        label_ki.configure(background = '#6689da', foreground='white')
+
+        texto_lb_kd = StringVar()
+        texto_lb_kd.set("Kd:")
+        label_kd = Label(top, textvariable=texto_lb_kd, relief=GROOVE, bd=2)
+        label_kd.grid(row=14, column=6)
+        label_kd.configure(background = '#6689da', foreground='white')
+
+        kp = Entry(top)
+        kp.grid(row=10, column=7)
+
+        ki = Entry(top)
+        ki.grid(row=12, column=7)
+
+        kd = Entry(top)
+        kd.grid(row=14, column=7)
+
+        k = 0
+
+        arquivousuario = open(salvararquivo, 'a')
+
         try:
             # LOOP DE LEITURA
             while True:
+                k += 1
+                var_kp = kp.get()
+                var_ki = ki.get()
+                var_kd = kd.get()
+                if (k >10):
+                    kp.delete(0, 'end')
+                    ki.delete(0, 'end')
+                    kd.delete(0, 'end')
+                    k = 0
+                if var_kp:
+                    ser.write(str.encode('p' + var_kp))
+                if var_ki:
+                    ser.write(str.encode('i' + var_ki))
+                if var_kd:
+                    ser.write(str.encode('d' + var_kd))
+
                 serial_bytes = ser.readline()
                 serial_texto = serial_bytes.decode('utf-8')
                 a = serial_texto.split(':')
                 dados = '[%s]' % ', '.join(map(str, a)) + "\n"
+                dados = dados.replace('\n', ' ').replace('\r', '')
                 # ordem: set_point, soma_erro, LDR_valor, r, kp, ki, kd
                 arquivousuario.write(dados + '\n')
-                text.insert(INSERT, dados)
+                arquivousuario.flush()
+                text.insert(INSERT, dados + '\n')
                 text.see(END)
-                time.sleep(1)
+                # time.sleep(1)
         except Exception as e:
             messagebox.showinfo("Erro!", "Erro: " + str(e), icon = 'error')
             pass
@@ -316,9 +322,8 @@ espaco2 = Label(top, text=" ") # apenas coloca um espaço vazio no grid
 espaco2.grid(row=8, column=1)
 espaco2.configure(background = '#6689da', foreground = 'white')
 
-
-text = ScrolledText(top, width=60, height=20)
-text.grid(row=9, column=3, columnspan=5, rowspan = 10)
+text = ScrolledText(top, width=50, height=20)
+text.grid(row=9, column=1, columnspan=5, rowspan = 10)
 
 # chama o mainloop -> abre a janela com os itens anteriores
 top.mainloop()
