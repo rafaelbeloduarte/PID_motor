@@ -9,15 +9,8 @@ import sys
 import os
 from tkinter import messagebox
 from tkinter.scrolledtext import ScrolledText
-# import matplotlib.pyplot as plt
-# import matplotlib.animation as animation
-# from matplotlib import style
-# import webbrowser
-# import datetime
-# import time
-# import numpy as np
-# import warnings
-
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
 # funções-------------------------------------------------------------------------------------
 
@@ -34,40 +27,72 @@ def sel():
     label.config(text=selecao)
 
 
-# def graficoinst():
-#     plt.close()
-#     fig1 = plt.figure()
-#     ex1 = plt.subplot(2, 1, 1)
-#     ex1.plot(tempo1, temp1, '-b')
-#     ex1.set_ylabel('T2')
-#     plt.ylabel('T2', axes=ex1)
-#
-#     ex2 = plt.subplot(2, 1, 2)
-#     ex2.plot(tempo2, temp2, '-g')
-#     ex2.set_ylabel('T3')
-#     plt.ylabel('T3', axes=ex2)
-#
-#     plt.xlabel('Tempo (s)')
-#     fig1.show()
+def graficoinst():
+    plt.close()
+    fig = plt.figure()
+    grafico_setpoint = open('grafico_setpoint.txt', 'r').read()
+    setpoint = grafico_setpoint.split('\n')
+    setpoint = filter(None, setpoint)
+    lista_setpoint = list(setpoint)
+    for i in range(len(lista_setpoint)):
+        lista_setpoint[i] = float(lista_setpoint[i])
 
-# def grafico():
-#     plt.close()
-#     fig = plt.figure()
-#     def animar(i):
-#         plt.clf()
-#         eixo1 = fig.add_subplot(2, 1, 1)
-#         eixo1.plot(tempo1, temp1, '-b')
-#         eixo1.set_ylabel('T2')
-#         plt.ylabel('T2', axes = eixo1)
-#
-#         eixo2 = fig.add_subplot(2, 1, 2)
-#         eixo2.plot(tempo2, temp2, '-g')
-#         eixo2.set_ylabel('T3')
-#         plt.ylabel('T3', axes = eixo2)
-#
-#         plt.xlabel('Tempo (s)')
-#     ani = animation.FuncAnimation(fig, animar, interval=1000)
-#     plt.show()
+    grafico_LDR = open('grafico_LDR.txt', 'r').read()
+    LDR = grafico_LDR.split('\n')
+    LDR = filter(None, LDR)
+    lista_LDR = list(LDR)
+    for i in range(len(lista_LDR)):
+        lista_LDR[i] = float(lista_LDR[i])
+
+    grafico_r = open('grafico_r.txt', 'r').read()
+    r = grafico_r.split('\n')
+    r = filter(None, r)
+    lista_r = list(r)
+    for i in range(len(lista_r)):
+        lista_r[i] = float(lista_r[i])
+
+    plt.clf()
+    eixo = fig.add_subplot(1, 1, 1)
+    eixo.plot(lista_setpoint, '-b', label='Set point')
+    eixo.plot(lista_LDR, '-g', label='LDR')
+    eixo.plot(lista_r, '-r', label='Resposta')
+    eixo.legend()
+    fig.show()
+
+def grafico():
+    plt.close()
+    fig = plt.figure()
+    def animar(i):
+        grafico_setpoint = open('grafico_setpoint.txt', 'r').read()
+        setpoint = grafico_setpoint.split('\n')
+        setpoint = filter(None, setpoint)
+        lista_setpoint = list(setpoint)
+        for i in range(len(lista_setpoint)):
+            lista_setpoint[i] = float(lista_setpoint[i])
+
+        grafico_LDR = open('grafico_LDR.txt', 'r').read()
+        LDR = grafico_LDR.split('\n')
+        LDR = filter(None, LDR)
+        lista_LDR = list(LDR)
+        for i in range(len(lista_LDR)):
+            lista_LDR[i] = float(lista_LDR[i])
+
+        grafico_r= open('grafico_r.txt', 'r').read()
+        r = grafico_r.split('\n')
+        r = filter(None, r)
+        lista_r = list(r)
+        for i in range(len(lista_r)):
+            lista_r[i] = float(lista_r[i])
+
+        plt.clf()
+        eixo = fig.add_subplot(1, 1, 1)
+        eixo.plot(lista_setpoint, '-b', label='Set point')
+        eixo.plot(lista_LDR, '-g', label='LDR')
+        eixo.plot(lista_r, '-r', label='Resposta')
+        eixo.legend()
+
+    ani = animation.FuncAnimation(fig, animar, interval=1000)
+    plt.show()
 
 def selbaud():
     selection = "Baudrate: " + str(varbaud.get())
@@ -143,6 +168,9 @@ def handle_leitura():
         i_limpa_texto = 0
 
         arquivousuario = open(salvararquivo, 'a')
+        graf_setpoint = open("grafico_setpoint.txt", 'w')
+        graf_LDR = open("grafico_LDR.txt", 'w')
+        graf_r = open("grafico_r.txt", 'w')
 
         rol = IntVar()
 
@@ -178,10 +206,21 @@ def handle_leitura():
                 serial_texto = serial_bytes.decode('utf-8')
                 a = serial_texto.split(':')
                 dados = []
+                dados_graf = []
                 if a:
                     dados = '[%s]' % ', '.join(map(str, a)) + "\n"
                     dados = dados.replace('\n', '').replace('\r', '').replace('[', '').replace(']', '')
-                # ordem: set_point, soma_erro, LDR_valor, r, kp, ki, kd
+                    dados_graf = dados.split()
+                    for i in range(len(dados_graf)):
+                        dados_graf[i] = dados_graf[i].replace(',', '')
+                if dados_graf:
+                    graf_setpoint.write(dados_graf[0] + '\n')
+                    graf_setpoint.flush()
+                    graf_LDR.write(dados_graf[2] + '\n')
+                    graf_LDR.flush()
+                    graf_r.write(dados_graf[3] + '\n')
+                    graf_r.flush()
+                # ordem: set_point[0], soma_erro, LDR_valor[2], r[3], kp, ki, kd
                 if dados:
                     arquivousuario.write(dados + '\n')
                     arquivousuario.flush()
@@ -191,17 +230,28 @@ def handle_leitura():
                     i_limpa_texto += 1
                 if i_limpa_texto > 1000:
                     text.delete(1.0, END)
+
+                    graf_setpoint = open('grafico_setpoint.txt', 'r+')
+                    graf_setpoint.truncate(0)
+                    graf_LDR = open('grafico_LDR.txt', 'r+')
+                    graf_LDR.truncate(0)
+                    graf_r = open('grafico_r.txt', 'r+')
+                    graf_r.truncate(0)
+
                     i_limpa_texto = 0
                 # time.sleep(1)
         except Exception as e:
             messagebox.showinfo("Erro!", "Erro: " + str(e), icon='error')
             pass
         ser.close()
+        graf_LDR.close()
+        graf_r.close()
+        graf_setpoint.close()
+        arquivousuario.close()
 
     t = threading.Thread(target=iniciar)
     t.daemon = True
     t.start()
-    arquivousuario.close()
 
 
 def atualizarporta():
@@ -246,8 +296,8 @@ def reiniciar():
 # define a janela principal----------------------------------
 top = tkinter.Tk()
 top.wm_title("Leitor de dados - portas serial - DEQ - UEM")
-top.minsize(900, 600)
-top.geometry("750x250")
+top.minsize(750, 650)
+top.geometry("750x650")
 top.configure(background='#6689da')
 # -----------------------------------------------------------
 
@@ -320,13 +370,13 @@ espaco = Label(top, text=" ")  # apenas coloca um espaço vazio no grid
 espaco.grid(row=5, column=1)
 espaco.configure(background='#6689da', foreground='white')
 # botão que chama o gráfico dos dados
-# botaograf = tkinter.Button(top, text="Exibir gráfico em tempo real", command=grafico)
-# botaograf.grid(row=7, column=3, columnspan = 2)
-# botaograf.configure(activebackground='#000000', activeforeground='#FFFFFF', width = 25)
-#
-# botaograf_inst = tkinter.Button(top, text="Exibir gráfico", command=graficoinst)
-# botaograf_inst.grid(row=6, column=3, columnspan = 2)
-# botaograf_inst.configure(activebackground='#000000', activeforeground='#FFFFFF', width = 25)
+botaograf = tkinter.Button(top, text="Exibir gráfico em tempo real", command=grafico)
+botaograf.grid(row=7, column=3, columnspan = 2)
+botaograf.configure(activebackground='#000000', activeforeground='#FFFFFF', width = 25)
+
+botaograf_inst = tkinter.Button(top, text="Exibir gráfico", command=graficoinst)
+botaograf_inst.grid(row=6, column=3, columnspan = 2)
+botaograf_inst.configure(activebackground='#000000', activeforeground='#FFFFFF', width = 25)
 
 inicia = tkinter.Button(top, text="Iniciar leitura", command=handle_leitura)
 inicia.grid(row=6, column=1)
