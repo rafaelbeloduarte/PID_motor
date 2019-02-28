@@ -59,7 +59,7 @@ void loop() {
   LDR_valor = map(analogRead(pino_LDR), 0, 1023, 0, 255);
   analogWrite(pino_LED, r);
 
-  if (millis() > 1000 + timer) {
+  if (millis() > 300 + timer) {
 
     set_point = map(analogRead(pino_pot), 0, 1023, 0, 255);
     Serial.print(set_point);
