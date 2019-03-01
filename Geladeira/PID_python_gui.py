@@ -26,7 +26,6 @@ def sel():
     label.configure(background='#6689da', foreground='white', borderwidth=3, relief='groove')
     label.config(text=selecao)
 
-
 def graficoinst():
     plt.close()
     fig = plt.figure()
@@ -100,7 +99,6 @@ def selbaud():
     labelbaud.grid(row=4, column=1)
     labelbaud.config(background='#6689da', foreground='white', borderwidth=3, relief='groove', width=14)
     labelbaud.config(text=selection)
-
 
 def handle_leitura():
     try:
@@ -257,7 +255,6 @@ def handle_leitura():
     t.daemon = True
     t.start()
 
-
 def atualizarporta():
     comlist = serial.tools.list_ports.comports()
     connected = []
@@ -282,11 +279,8 @@ def atualizarporta():
             label.configure(background='#6689da', foreground='white', borderwidth=3, relief='groove')
             label.config(text=selecao)
 
-
 def reiniciar():
-    confirma = messagebox.askquestion("Aviso!", "Tem certeza?",
-                                      icon='warning')
-    if confirma == 'yes':
+    if messagebox.askokcancel("Reiniciando...", "Tem certeza?"):
         python = sys.executable
         os.execl(python, python, *sys.argv)
     else:
@@ -296,7 +290,6 @@ def fechando():
     if messagebox.askokcancel("Fechando...", "Tem certeza?"):
         plt.close('all')
         top.destroy()
-
 
 # fim das funções-----------------------------------------------------------------------------
 
