@@ -41,6 +41,7 @@ def graficoinst():
     LDR = grafico_LDR.split('\n')
     LDR = filter(None, LDR)
     lista_LDR = list(LDR)
+    # Deve-se alimentar números ao plot, se for str o plot não consegue ordenar o eixo
     for i in range(len(lista_LDR)):
         lista_LDR[i] = float(lista_LDR[i])
 
@@ -90,7 +91,6 @@ def grafico():
         eixo.plot(lista_LDR, '-g', label='LDR')
         eixo.plot(lista_r, '-r', label='Resposta')
         eixo.legend()
-
     ani = animation.FuncAnimation(fig, animar, interval=1000)
     plt.show()
 
@@ -196,7 +196,7 @@ def handle_leitura():
                     kd.delete(0, 'end')
                     k = 0
                 if var_kp:
-                    ser.write(str.encode('p' + var_kp))
+                    ser.write(str.encode('p' + var_kp)) #str.encode() retorna a versão da str codificada em utf-8
                 if var_ki:
                     ser.write(str.encode('i' + var_ki))
                 if var_kd:
@@ -208,7 +208,11 @@ def handle_leitura():
                 dados = []
                 dados_graf = []
                 if a:
-                    dados = '[%s]' % ', '.join(map(str, a)) + "\n"
+                    dados = '[%s]' % ', '.join(map(str, a))
+                    # map serve para aplicarmos uma função a cada elemento de uma lista,
+                    # retornando uma nova lista contendo os elementos resultantes da aplicação da função.
+                    # The %s token allows to insert (and potentially format) a string.
+                    # Notice that the %s token is replaced by whatever I pass to the string after the % symbol.
                     dados = dados.replace('\n', '').replace('\r', '').replace('[', '').replace(']', '')
                     dados_graf = dados.split()
                     for i in range(len(dados_graf)):
@@ -287,6 +291,11 @@ def reiniciar():
         os.execl(python, python, *sys.argv)
     else:
         return None
+
+def fechando():
+    if messagebox.askokcancel("Fechando...", "Tem certeza?"):
+        plt.close('all')
+        top.destroy()
 
 
 # fim das funções-----------------------------------------------------------------------------
@@ -402,4 +411,5 @@ text = ScrolledText(top, width=50, height=20)
 text.grid(row=11, column=1, columnspan=5, rowspan=10)
 
 # chama o mainloop -> abre a janela com os itens anteriores
+top.protocol("WM_DELETE_WINDOW", fechando)
 top.mainloop()
