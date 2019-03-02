@@ -181,6 +181,15 @@ def handle_leitura():
         rol_iniciar.configure(background='#F2F2F2', indicatoron=0, width=15)
         rol_iniciar.select()
 
+        limpar_graf = IntVar()
+
+        def limpar_graf_estado():
+            limpar_graf.set(1)
+
+        limpar_graf_botao = Button(top, text="Limpar gráfico", command=limpar_graf_estado)
+        limpar_graf_botao.grid(row=6, column=5, rowspan = 2)
+        limpar_graf_botao.configure(activebackground='#000000', activeforeground='#FFFFFF', width=12, height=3)
+
         try:
             # LOOP DE LEITURA
             while True:
@@ -241,6 +250,16 @@ def handle_leitura():
                     graf_r.truncate(0)
 
                     i_limpa_texto = 0
+                if limpar_graf.get() == 1:
+                    graf_setpoint = open('grafico_setpoint.txt', 'r+')
+                    graf_setpoint.truncate(0)
+                    graf_LDR = open('grafico_LDR.txt', 'r+')
+                    graf_LDR.truncate(0)
+                    graf_r = open('grafico_r.txt', 'r+')
+                    graf_r.truncate(0)
+
+                    limpar_graf.set(0)
+
                 # time.sleep(1)
         except Exception as e:
             messagebox.showinfo("Erro!", "Erro: " + str(e), icon='error')
@@ -380,6 +399,7 @@ botaograf_inst = tkinter.Button(top, text="Exibir gráfico", command=graficoinst
 botaograf_inst.grid(row=6, column=3, columnspan = 2)
 botaograf_inst.configure(activebackground='#000000', activeforeground='#FFFFFF', width = 25)
 
+
 inicia = tkinter.Button(top, text="Iniciar leitura", command=handle_leitura)
 inicia.grid(row=6, column=1)
 inicia.configure(activebackground='#000000', activeforeground='#FFFFFF', width=12)
@@ -389,7 +409,7 @@ reinicia.grid(row=6, column=7)
 reinicia.configure(activebackground='#000000', activeforeground='#FFFFFF', width=12)
 
 atporta = tkinter.Button(top, text="Atualizar portas", command=atualizarporta)  # botão atualizar portas
-atporta.grid(row=6, column=5)
+atporta.grid(row=6, column=6)
 atporta.configure(activebackground='#000000', activeforeground='#FFFFFF', width=12)
 
 espaco2 = Label(top, text=" ")  # apenas coloca um espaço vazio no grid
