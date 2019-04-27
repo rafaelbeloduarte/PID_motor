@@ -23,7 +23,7 @@ def sel():
     selecao = "Porta selecionada: \n" + str(var.get())
     label = Label(top)
     label.grid(row=2, column=1)
-    label.configure(background='#6689da', foreground='white', borderwidth=3, relief='groove')
+    label.configure(background='#000000', foreground='white', borderwidth=3, relief='groove')
     label.config(text=selecao)
 
 def graficoinst():
@@ -97,7 +97,7 @@ def selbaud():
     selection = "Baudrate: " + str(varbaud.get())
     labelbaud = Label(top)
     labelbaud.grid(row=4, column=1)
-    labelbaud.config(background='#6689da', foreground='white', borderwidth=3, relief='groove', width=14)
+    labelbaud.config(background='#000000', foreground='white', borderwidth=3, relief='groove', width=14)
     labelbaud.config(text=selection)
 
 def handle_leitura():
@@ -139,19 +139,19 @@ def handle_leitura():
         texto_lb_kp.set("Kp:")
         label_kp = Label(top, textvariable=texto_lb_kp, relief=GROOVE, bd=2)
         label_kp.grid(row=10, column=6)
-        label_kp.configure(background='#6689da', foreground='white')
+        label_kp.configure(background='#000000', foreground='white')
 
         texto_lb_ki = StringVar()
         texto_lb_ki.set("Ki:")
         label_ki = Label(top, textvariable=texto_lb_ki, relief=GROOVE, bd=2)
         label_ki.grid(row=12, column=6)
-        label_ki.configure(background='#6689da', foreground='white')
+        label_ki.configure(background='#000000', foreground='white')
 
         texto_lb_kd = StringVar()
         texto_lb_kd.set("Kd:")
         label_kd = Label(top, textvariable=texto_lb_kd, relief=GROOVE, bd=2)
         label_kd.grid(row=14, column=6)
-        label_kd.configure(background='#6689da', foreground='white')
+        label_kd.configure(background='#000000', foreground='white')
 
         kp = Entry(top)
         kp.grid(row=10, column=7)
@@ -295,7 +295,7 @@ def atualizarporta():
             selecao = "Porta selecionada:\n" + ports[i]
             label = Label(top)
             label.grid(row=2, column=1)
-            label.configure(background='#6689da', foreground='white', borderwidth=3, relief='groove')
+            label.configure(background='#000000', foreground='white', borderwidth=3, relief='groove')
             label.config(text=selecao)
 
 def reiniciar():
@@ -319,7 +319,7 @@ top = tkinter.Tk()
 top.wm_title("Leitor de dados - portas serial - DEQ - UEM")
 top.minsize(750, 650)
 top.geometry("750x650")
-top.configure(background='#6689da')
+top.configure(background='#000000')
 # -----------------------------------------------------------
 
 comlist = serial.tools.list_ports.comports()
@@ -334,7 +334,7 @@ var1 = StringVar()
 label1 = Label(top, textvariable=var1, relief=RAISED, bd=0)
 var1.set("Selecione a porta:")
 label1.grid(row=1, column=1)
-label1.configure(background='#6689da', foreground='white')
+label1.configure(background='#000000', foreground='white')
 
 # exibe as portas disponíveis
 ports = list(serial.tools.list_ports.comports())
@@ -351,14 +351,14 @@ for i in range(len(connected)):
         selecao = "Porta selecionada:\n" + str(var.get())
         label = Label(top)
         label.grid(row=2, column=1)
-        label.configure(background='#6689da', foreground='white', borderwidth=3, relief='groove')
+        label.configure(background='#000000', foreground='white', borderwidth=3, relief='groove')
         label.config(text=selecao)
 # pega o baud rate, varbaud é o baudrate e var2 é uma label============================
 var2 = StringVar()
 label2 = Label(top, textvariable=var2, bd=0)
 var2.set("Selecione a taxa \n de transferência de \n dados (Baudrate):")
 label2.grid(row=3, column=1)
-label2.configure(background='#6689da', foreground='white')
+label2.configure(background='#000000', foreground='white')
 varbaud = IntVar()
 R1 = Radiobutton(top, text="4800", variable=varbaud, value=4800, command=selbaud)
 R1.grid(row=3, column=2)
@@ -383,13 +383,13 @@ R6.configure(indicatoron=0, width=12)
 selection = "Baudrate: " + str(varbaud.get())
 labelbaud = Label(top)
 labelbaud.grid(row=4, column=1)
-labelbaud.config(background='#6689da', foreground='white', borderwidth=3, relief='groove', width=14)
+labelbaud.config(background='#000000', foreground='white', borderwidth=3, relief='groove', width=14)
 labelbaud.config(text=selection)
 # =====================================================================================
 
 espaco = Label(top, text=" ")  # apenas coloca um espaço vazio no grid
 espaco.grid(row=5, column=1)
-espaco.configure(background='#6689da', foreground='white')
+espaco.configure(background='#000000', foreground='white')
 # botão que chama o gráfico dos dados
 botaograf = tkinter.Button(top, text="Exibir gráfico em tempo real", command=grafico)
 botaograf.grid(row=7, column=3, columnspan = 2)
@@ -414,11 +414,11 @@ atporta.configure(activebackground='#000000', activeforeground='#FFFFFF', width=
 
 espaco2 = Label(top, text=" ")  # apenas coloca um espaço vazio no grid
 espaco2.grid(row=8, column=1)
-espaco2.configure(background='#6689da', foreground='white')
+espaco2.configure(background='#000000', foreground='white')
 
 label_variaveis = Label(top, text="Set point      soma erro     LDR_valor        r          kp       ki       kd")
 label_variaveis.grid(row=9, column=1, columnspan=4)
-label_variaveis.configure(background='#6689da', foreground='white')
+label_variaveis.configure(background='#000000', foreground='white')
 
 text = ScrolledText(top, width=50, height=20)
 text.grid(row=11, column=1, columnspan=5, rowspan=10)
